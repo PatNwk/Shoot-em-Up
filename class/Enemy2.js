@@ -7,7 +7,7 @@ export default class Enemy2 {
         this.speed = speed;
         this.maxLife = maxLife;
         this.currentLife = maxLife;
-        this.points = 10;
+        this.points = 20;
     }
 
     draw(ctx, enemies2Image) {

@@ -20,7 +20,7 @@ let enemies2 = [];
 let boss = [];
 const enemyDeathheight = 200;
 const enemyDeathwidth = 200;
-const animationDuration = 500;
+const animationDuration = 200;
 let gameOver = false; 
 let win = false; 
 let bossCreated = false;
@@ -39,8 +39,8 @@ bossImage.src = '../img/IMG_6957.png';
 
 const levels = [
     { score: 0, enemySpeed: 2, enemyHealth: 5, enemySpawnRate: 2000, enemy2SpawnRate: 5000 },
-    { score: 300, enemySpeed: 3, enemyHealth: 15, enemySpawnRate: 1500, enemy2SpawnRate: 4000 },
-    { score: 400, enemySpeed: 4, enemyHealth: 25, enemySpawnRate: 1000, enemy2SpawnRate: 3000 },
+    { score: 400, enemySpeed: 3, enemyHealth: 15, enemySpawnRate: 1500, enemy2SpawnRate: 4000 },
+    { score: 600, enemySpeed: 4, enemyHealth: 25, enemySpawnRate: 1000, enemy2SpawnRate: 3000 },
 ];
 
 let currentLevel = 0;
@@ -70,8 +70,8 @@ function createEnemy() {
 }
 
 function createEnemy2() {
-    const enemyWidth = 70;
-    const enemyHeight = 70;
+    const enemyWidth = 110;
+    const enemyHeight = 110;
     const enemyX = Math.random() * (canvas.width - enemyWidth);
     const enemyY = -enemyHeight;
     const enemySpeed = levels[currentLevel].enemySpeed;
@@ -86,7 +86,7 @@ function createBoss() {
     const bossX = Math.random() * (canvas.width - bossWidth);
     const bossY = Math.random() * (canvas.height - bossHeight);
     const bossSpeed = levels[currentLevel].enemySpeed;
-    const bossLife = 100; // Vie maximale du boss
+    const bossLife = 100;
     const newBoss = new Boss(bossX, bossY, bossWidth, bossHeight, bossSpeed, bossLife, canvas);
     boss.push(newBoss);
 }
@@ -287,7 +287,7 @@ function gameLoop() {
     boss.forEach((boss) => {
         bullets.forEach((bullet) => {
             if (checkCollision3(bullet, boss)) {
-                boss.currentLife--; // Boss prend des dégâts
+                boss.currentLife--; 
                 if (boss.currentLife <= 0) {
                     win = true;
                 }
