@@ -1,16 +1,17 @@
-
+// Import des classes nécessaires
 import Player from '../class/Player.js';
 import Bullet from '../class/Bullet.js';
 import Enemy from '../class/Enemy.js';
 import Enemy2 from '../class/Enemy2.js';
 import Boss from '../class/Boss.js';
 
+// Configuration du canvas
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// Paramètres du joueur et des entités du jeu
 const playerWidth = 150;
 const playerHeight = 150;
 let player;
@@ -25,6 +26,7 @@ let gameOver = false;
 let win = false; 
 let bossCreated = false;
 
+// Chargement des images
 const playerImage = new Image();
 playerImage.src = '../img/output.png';
 
@@ -37,6 +39,7 @@ enemies2Image.src = '../img/méchant2.png';
 const bossImage = new Image();
 bossImage.src = '../img/IMG_6957.png';
 
+// Configuration des niveaux
 const levels = [
     { score: 0, enemySpeed: 2, enemyHealth: 5, enemySpawnRate: 2000, enemy2SpawnRate: 5000000000000000 },
     { score: 300, enemySpeed: 3, enemyHealth: 15, enemySpawnRate: 1500, enemy2SpawnRate: 4000 },
@@ -46,6 +49,7 @@ const levels = [
 
 let currentLevel = 0;
 
+// Création du joueur
 function createPlayer() {
     const x = canvas.width / 2 - playerWidth / 2;
     const y = canvas.height - playerHeight - 10;
@@ -55,10 +59,12 @@ function createPlayer() {
     return new Player(x, y, playerWidth, playerHeight, speed, playerlife, maxLife);
 }
 
+// Création d'une balle
 function createBullet() {
     bullets.push(new Bullet(player.x + player.width / 2 - 2.5, player.y));
 }
 
+// Création d'un ennemi
 function createEnemy() {
     const enemyWidth = 70;
     const enemyHeight = 70;
@@ -70,6 +76,7 @@ function createEnemy() {
     enemies.push(newEnemy);
 }
 
+// Création d'un second type d'ennemi
 function createEnemy2() {
     const enemyWidth = 110;
     const enemyHeight = 110;
@@ -81,6 +88,7 @@ function createEnemy2() {
     enemies2.push(newEnemy2);
 }
 
+// Création du boss
 function createBoss() {
     const bossWidth = 200;
     const bossHeight = 200;
@@ -92,8 +100,7 @@ function createBoss() {
     boss.push(newBoss);
 }
 
-
-
+// Vérification du passage au niveau supérieur
 function checkLevelUp() {
     if (player.score >= levels[currentLevel + 1]?.score) {
         currentLevel++;
@@ -104,6 +111,7 @@ function checkLevelUp() {
     }
 }
 
+// Gestion des collisions entre le joueur et les ennemis
 function playerTouchedByEnemy() {
     enemies.forEach((enemy) => {
         if (
@@ -127,7 +135,7 @@ function playerTouchedByEnemy() {
             player.y < enemy2.y + enemy2.height &&
             player.y + player.height > enemy2.y
         ) {
-            player.playerlife= player.playerlife - 2;
+            player.playerlife = player.playerlife - 2;
             enemies2.splice(enemies2.indexOf(enemy2), 1); 
             if (player.playerlife <= 0) {
                 gameOver = true; 
@@ -150,6 +158,7 @@ function playerTouchedByEnemy() {
     });
 }
 
+// Vérification des collisions entre les balles et le boss
 function checkCollision3(bullet, boss) {
     if (
         bullet.x < boss.x + boss.width &&
@@ -162,6 +171,7 @@ function checkCollision3(bullet, boss) {
     return false;
 }
 
+// Vérification des collisions entre les balles et les ennemis
 function checkCollision(bullet, enemy) {
     if (
         bullet.x < enemy.x + enemy.width &&
@@ -174,6 +184,7 @@ function checkCollision(bullet, enemy) {
     return false;
 }
 
+// Vérification des collisions entre les balles et les ennemis de type 2
 function checkCollision2(bullet, enemy2) {
     if (
         bullet.x < enemy2.x + enemy2.width &&
@@ -186,6 +197,7 @@ function checkCollision2(bullet, enemy2) {
     return false;
 }
 
+// Dessin de l'animation de la mort des ennemis
 function drawDeathAnimation(x, y) {
     const deathFrames = [];
     for (let i = 1; i <= 6; i++) {
@@ -213,9 +225,12 @@ function drawDeathAnimation(x, y) {
     animateFrame();
 }
 
+// Fonction qui représente la boucle principale du jeu.
+// Elle met à jour et dessine les éléments du jeu, gère les collisions et les événements de fin de jeu.
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Gestion de la fin du jeu
     if (gameOver) {
         localStorage.setItem('playerScore', player.score); 
         localStorage.setItem('playerLevel', player.currentLevel);
@@ -223,6 +238,7 @@ function gameLoop() {
         return;
     }
 
+    // Gestion de la victoire
     if (win) {
         localStorage.setItem('playerScore', player.score);
         localStorage.setItem('playerLevel', currentLevel);
@@ -230,35 +246,43 @@ function gameLoop() {
         return;
     }
 
+    // Initialisation du joueur
     if (!player) {
         player = createPlayer();
     }
 
+    // Mise à jour et dessin du joueur
     player.update(canvas);
     player.draw(ctx, playerImage);
 
+    // Mise à jour et dessin des balles
     bullets.forEach((bullet) => {
         bullet.update();
         bullet.draw(ctx);
     });
 
+    // Suppression des balles hors de l'écran
     bullets = bullets.filter((bullet) => bullet.y > 0);
 
+    // Mise à jour et dessin des ennemis
     enemies.forEach((enemy) => {
         enemy.update();
         enemy.draw(ctx, enemiesImage);
     });
 
+    // Mise à jour et dessin des ennemis de type 2
     enemies2.forEach((enemy2) => {
         enemy2.update();
         enemy2.draw(ctx, enemies2Image);
     });
 
+    // Mise à jour et dessin du boss
     boss.forEach((boss) => {
         boss.update();
         boss.draw(ctx, bossImage);
     });
 
+    // Gestion des collisions entre les balles et les ennemis
     enemies.forEach((enemy) => {
         bullets.forEach((bullet) => {
             if (checkCollision(bullet, enemy)) {
@@ -272,6 +296,7 @@ function gameLoop() {
         });
     });
 
+    // Gestion des collisions entre les balles et les ennemis de type 2
     enemies2.forEach((enemy2) => {
         bullets.forEach((bullet) => {
             if (checkCollision2(bullet, enemy2)) {
@@ -285,6 +310,7 @@ function gameLoop() {
         });
     });
 
+    // Gestion des collisions entre les balles et le boss
     boss.forEach((boss) => {
         bullets.forEach((bullet) => {
             if (checkCollision3(bullet, boss)) {
@@ -296,13 +322,16 @@ function gameLoop() {
         });
     });
 
+    // Suppression des balles hors de l'écran
     bullets = bullets.filter((bullet) => bullet.y > 0);
 
+    // Création du boss si le score du joueur atteint 10000 et que le boss n'a pas encore été créé
     if (player.score >= 10000 && !bossCreated) {
         createBoss();
         bossCreated = true;
     }
 
+    // Dessin des étoiles sur le fond de l'écran
     for (let i = 0; i < 1000; i++) {
         const radius = Math.random() * 2;
         const x = Math.random() * canvas.width;
@@ -315,19 +344,23 @@ function gameLoop() {
         ctx.fill();
     }
 
+    // Gestion des collisions entre le joueur et les ennemis
     playerTouchedByEnemy();
 
+    // Vérification du passage au niveau supérieur
     checkLevelUp(); 
 
+    // Affichage du score et du niveau
     ctx.fillStyle = 'white';
     ctx.font = '20px Arial bold';
     ctx.fillText(`Score: ${player.score}`, 10, 60);
     ctx.fillText(`Level: ${currentLevel}`, 10, 90);
 
+    // Requête d'animation pour la prochaine frame
     requestAnimationFrame(gameLoop);
 }
 
-
+// Chargement des images et démarrage de la boucle de jeu
 playerImage.onload = () => {
     enemiesImage.onload = () => {
         enemies2Image.onload = () => {
@@ -338,6 +371,7 @@ playerImage.onload = () => {
     };
 };
 
+// Gestion des événements de pression de touches pour le déplacement et le tir du joueur
 document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowLeft' && player.x > 0) {
         player.speedX = -player.speed;
@@ -352,6 +386,7 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
+// Gestion des événements de relâchement de touches pour arrêter le déplacement du joueur
 document.addEventListener('keyup', (event) => {
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
         player.speedX = 0;
@@ -360,5 +395,6 @@ document.addEventListener('keyup', (event) => {
     }
 });
 
+// Intervalles de création d'ennemis
 let enemyInterval = setInterval(createEnemy, levels[currentLevel].enemySpawnRate);
-let enemy2Interval = setInterval(createEnemy2, levels[currentLevel].enemy2SpawnRate); 
+let enemy2Interval = setInterval(createEnemy2, levels[currentLevel].enemy2SpawnRate);
