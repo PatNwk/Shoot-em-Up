@@ -358,4 +358,4 @@ document.addEventListener('keyup', (event) => {
 });
 
 let enemyInterval = setInterval(createEnemy, levels[currentLevel].enemySpawnRate);
-let enemy2Interval = setInterval(createEnemy2, levels[currentLevel].enemy2SpawnRate); // Ajout du nouvel intervalle pour enemy2
+let enemy2Interval = setInterval(createEnemy2, levels[currentLevel].enemy2SpawnRate); 
