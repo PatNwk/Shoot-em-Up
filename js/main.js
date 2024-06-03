@@ -38,9 +38,10 @@ const bossImage = new Image();
 bossImage.src = '../img/IMG_6957.png';
 
 const levels = [
-    { score: 0, enemySpeed: 2, enemyHealth: 5, enemySpawnRate: 2000, enemy2SpawnRate: 5000 },
-    { score: 400, enemySpeed: 3, enemyHealth: 15, enemySpawnRate: 1500, enemy2SpawnRate: 4000 },
-    { score: 600, enemySpeed: 4, enemyHealth: 25, enemySpawnRate: 1000, enemy2SpawnRate: 3000 },
+    { score: 0, enemySpeed: 2, enemyHealth: 5, enemySpawnRate: 2000, enemy2SpawnRate: 5000000000000000 },
+    { score: 300, enemySpeed: 3, enemyHealth: 15, enemySpawnRate: 1500, enemy2SpawnRate: 4000 },
+    { score: 600, enemySpeed: 4, enemyHealth: 25, enemySpawnRate: 1000, enemy2SpawnRate: 2000 },
+    { score: 900, enemySpeed: 4, enemyHealth: 25, enemySpawnRate: 900, enemy2SpawnRate: 1000 },
 ];
 
 let currentLevel = 0;
@@ -86,7 +87,7 @@ function createBoss() {
     const bossX = Math.random() * (canvas.width - bossWidth);
     const bossY = Math.random() * (canvas.height - bossHeight);
     const bossSpeed = levels[currentLevel].enemySpeed;
-    const bossLife = 100;
+    const bossLife = 150;
     const newBoss = new Boss(bossX, bossY, bossWidth, bossHeight, bossSpeed, bossLife, canvas);
     boss.push(newBoss);
 }
@@ -275,7 +276,7 @@ function gameLoop() {
         bullets.forEach((bullet) => {
             if (checkCollision2(bullet, enemy2)) {
                 player.score += enemy2.points;
-                enemy2.currentLife--;
+                enemy2.currentLife = enemy2.currentLife - 1;
                 if (enemy2.currentLife <= 0) {
                     drawDeathAnimation(enemy2.x + (enemy2.width / 2), enemy2.y + (enemy2.height / 2));
                     enemies2.splice(enemies2.indexOf(enemy2), 1);
@@ -297,7 +298,7 @@ function gameLoop() {
 
     bullets = bullets.filter((bullet) => bullet.y > 0);
 
-    if (player.score >= 2000 && !bossCreated) {
+    if (player.score >= 10000 && !bossCreated) {
         createBoss();
         bossCreated = true;
     }
@@ -319,8 +320,7 @@ function gameLoop() {
     checkLevelUp(); 
 
     ctx.fillStyle = 'white';
-    ctx.font = '20px Arial';
-    ctx.fillText(`Life: ${player.playerlife}`, 10, 30);
+    ctx.font = '20px Arial bold';
     ctx.fillText(`Score: ${player.score}`, 10, 60);
     ctx.fillText(`Level: ${currentLevel}`, 10, 90);
 
