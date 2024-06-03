@@ -39,8 +39,8 @@ bossImage.src = '../img/IMG_6957.png';
 
 const levels = [
     { score: 0, enemySpeed: 2, enemyHealth: 5, enemySpawnRate: 2000, enemy2SpawnRate: 5000 },
-    { score: 100, enemySpeed: 3, enemyHealth: 10, enemySpawnRate: 1500, enemy2SpawnRate: 4000 },
-    { score: 300, enemySpeed: 4, enemyHealth: 15, enemySpawnRate: 1000, enemy2SpawnRate: 3000 },
+    { score: 300, enemySpeed: 3, enemyHealth: 15, enemySpawnRate: 1500, enemy2SpawnRate: 4000 },
+    { score: 400, enemySpeed: 4, enemyHealth: 25, enemySpawnRate: 1000, enemy2SpawnRate: 3000 },
 ];
 
 let currentLevel = 0;
@@ -80,16 +80,18 @@ function createEnemy2() {
     enemies2.push(newEnemy2);
 }
 
-function createBoss() { 
+function createBoss() {
     const bossWidth = 200;
     const bossHeight = 200;
     const bossX = Math.random() * (canvas.width - bossWidth);
-    const bossY = -bossHeight;
+    const bossY = Math.random() * (canvas.height - bossHeight);
     const bossSpeed = levels[currentLevel].enemySpeed;
-    const bossLife = levels[currentLevel].enemyHealth;
-    const newBoss = new Boss(bossX, bossY, bossWidth, bossHeight, bossSpeed, bossLife);
+    const bossLife = 100; // Vie maximale du boss
+    const newBoss = new Boss(bossX, bossY, bossWidth, bossHeight, bossSpeed, bossLife, canvas);
     boss.push(newBoss);
 }
+
+
 
 function checkLevelUp() {
     if (player.score >= levels[currentLevel + 1]?.score) {
@@ -124,7 +126,7 @@ function playerTouchedByEnemy() {
             player.y < enemy2.y + enemy2.height &&
             player.y + player.height > enemy2.y
         ) {
-            player.playerlife--;
+            player.playerlife= player.playerlife - 2;
             enemies2.splice(enemies2.indexOf(enemy2), 1); 
             if (player.playerlife <= 0) {
                 gameOver = true; 
@@ -187,7 +189,7 @@ function drawDeathAnimation(x, y) {
     const deathFrames = [];
     for (let i = 1; i <= 6; i++) {
         const frame = new Image();
-        frame.src = `../img/Animation/${i}.png`;
+        frame.src = `../img/frame-${i}.gif`;
         deathFrames.push(frame);
     }
 
@@ -243,17 +245,17 @@ function gameLoop() {
 
     enemies.forEach((enemy) => {
         enemy.update();
-        enemy.draw(ctx, enemiesImage); // Passez l'image appropriée ici
+        enemy.draw(ctx, enemiesImage);
     });
 
     enemies2.forEach((enemy2) => {
         enemy2.update();
-        enemy2.draw(ctx, enemies2Image); // Passez l'image appropriée ici
+        enemy2.draw(ctx, enemies2Image);
     });
 
     boss.forEach((boss) => {
         boss.update();
-        boss.draw(ctx, bossImage); // Passez l'image appropriée ici
+        boss.draw(ctx, bossImage);
     });
 
     enemies.forEach((enemy) => {
@@ -285,7 +287,7 @@ function gameLoop() {
     boss.forEach((boss) => {
         bullets.forEach((bullet) => {
             if (checkCollision3(bullet, boss)) {
-                boss.currentLife--;
+                boss.currentLife--; // Boss prend des dégâts
                 if (boss.currentLife <= 0) {
                     win = true;
                 }
@@ -295,7 +297,7 @@ function gameLoop() {
 
     bullets = bullets.filter((bullet) => bullet.y > 0);
 
-    if (player.score >= 1000 && !bossCreated) {
+    if (player.score >= 2000 && !bossCreated) {
         createBoss();
         bossCreated = true;
     }
@@ -324,6 +326,7 @@ function gameLoop() {
 
     requestAnimationFrame(gameLoop);
 }
+
 
 playerImage.onload = () => {
     enemiesImage.onload = () => {
